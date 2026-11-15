@@ -8,6 +8,8 @@ data/
 
 # Scratch / test artifacts
 .tmp/
+.tools/
+*.zip
 
 # OS junk
 Thumbs.db
