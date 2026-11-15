@@ -1,0 +1,14 @@
+# Python
+.venv/
+__pycache__/
+*.py[cod]
+
+# Runtime data: caches, Whisper models, exports, generated audio
+data/
+
+# Scratch / test artifacts
+.tmp/
+
+# OS junk
+Thumbs.db
+.DS_Store

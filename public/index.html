@@ -1,0 +1,211 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Khmer Dub — YouTube subtitle interpreter</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Sans+Khmer:wght@400;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/style.css" />
+</head>
+<body>
+<header class="topbar">
+  <a class="brand" href="/">
+    <span class="logo">▶</span>
+    <span class="brand-text"><strong>Khmer&nbsp;Dub</strong><small>YouTube → translated voice</small></span>
+  </a>
+
+  <form id="searchForm" class="search" autocomplete="off">
+    <input id="searchInput" type="search" placeholder="Paste a YouTube link, or search videos…" />
+    <button type="submit" class="primary">Go</button>
+  </form>
+
+  <div class="top-actions">
+    <a class="ghost link-btn" href="https://www.youtube.com" target="_blank" rel="noopener" title="Open the real YouTube in a new tab">YouTube ↗</a>
+    <button id="pasteBtn" class="ghost" title="Load link from clipboard">Paste link</button>
+  </div>
+</header>
+
+<main class="layout">
+  <section class="stage">
+    <div class="player-wrap">
+      <div id="player"></div>
+      <div id="placeholder" class="placeholder">
+        <div class="ph-icon">🎧</div>
+        <h2>Type a YouTube link to start</h2>
+        <p>Subtitles → Khmer text → Edge TTS voice, timed to the video.</p>
+      </div>
+      <div id="subs" class="subs hidden">
+        <div id="subsTranslated" class="line translated"></div>
+        <div id="subsOriginal" class="line original"></div>
+      </div>
+      <div id="notice" class="notice hidden">
+        <div class="notice-card">
+          <span id="noticeText"></span>
+          <button id="noticeAction" class="primary hidden">Transcribe with AI</button>
+        </div>
+      </div>
+      <div id="rateBadge" class="rate-badge hidden" title="Voice speed is fitted to the subtitle timing"></div>
+    </div>
+
+    <div class="meta-row">
+      <div class="video-meta">
+        <h1 id="videoTitle">Nothing loaded</h1>
+        <p id="videoSub">Pick a video and its subtitles will be translated and spoken.</p>
+      </div>
+      <div class="meta-badges">
+        <span id="dubBadge" class="badge">no dub</span>
+        <a id="ytLink" class="badge link hidden" href="#" target="_blank" rel="noopener">open on YouTube ↗</a>
+      </div>
+    </div>
+
+    <div class="controls">
+      <div class="control-group">
+        <label class="switch"><input type="checkbox" id="dubToggle" checked><span class="track"></span><span class="switch-label">Dub voice</span></label>
+        <label class="switch"><input type="checkbox" id="fitToggle" checked><span class="track"></span><span class="switch-label">Fit to timing</span></label>
+        <label class="switch"><input type="checkbox" id="showOriginal" checked><span class="track"></span><span class="switch-label">Show original</span></label>
+      </div>
+
+      <div class="control-group sliders">
+        <label class="mini">Offset
+          <input id="offsetRange" type="range" min="-2" max="2" step="0.05" value="0">
+          <span id="offsetVal" class="mini-val">0.00s</span>
+        </label>
+        <label class="mini">Original in speech
+          <select id="origVol" class="mini-select">
+            <option value="0">Mute</option>
+            <option value="18" selected>18%</option>
+            <option value="50">50%</option>
+            <option value="100">100%</option>
+          </select>
+        </label>
+        <label class="mini">Voice volume
+          <input id="volRange" type="range" min="0" max="1" step="0.05" value="1">
+        </label>
+      </div>
+
+      <div class="control-group buttons">
+        <button id="prepareBtn" class="primary" disabled>Translate &amp; dub</button>
+        <button id="exportBtn" class="ghost" disabled>Download</button>
+      </div>
+    </div>
+
+    <div class="status-line">
+      <span id="statusText">Idle</span>
+      <span id="statusDetail"></span>
+    </div>
+  </section>
+
+  <aside class="sidebar">
+    <div class="panel">
+      <h2>Voice &amp; language</h2>
+
+      <label class="field">
+        <span>Translate subtitles to</span>
+        <select id="targetLang">
+          <option value="km" selected>Khmer (ខ្មែរ)</option>
+          <option value="en">English</option>
+          <option value="th">Thai</option>
+          <option value="vi">Vietnamese</option>
+          <option value="zh-CN">Chinese (Simplified)</option>
+          <option value="ja">Japanese</option>
+          <option value="ko">Korean</option>
+          <option value="id">Indonesian</option>
+          <option value="my">Burmese</option>
+          <option value="lo">Lao</option>
+          <option value="es">Spanish</option>
+          <option value="fr">French</option>
+        </select>
+      </label>
+
+      <label class="field">
+        <span>Character voice</span>
+        <select id="character">
+          <option value="girl">Young girl — Sreymom, higher pitch</option>
+          <option value="woman" selected>Woman — Sreymom</option>
+          <option value="boy">Young man — Piseth, higher pitch</option>
+          <option value="man">Man — Piseth</option>
+          <option value="custom">Custom voice…</option>
+        </select>
+      </label>
+
+      <label class="field">
+        <span>Voice (Edge TTS)</span>
+        <select id="voiceSelect"></select>
+      </label>
+
+      <label class="field">
+        <span>Source subtitles</span>
+        <select id="sourceTrack">
+          <option value="auto">Auto — English preferred</option>
+        </select>
+      </label>
+
+      <label class="switch compact"><input type="checkbox" id="autoInterpret" checked><span class="track"></span><span class="switch-label">Auto interpret on click</span></label>
+
+      <p class="hint">Khmer voices: <b>Sreymom</b> (female) and <b>Piseth</b> (male). Voice speed is automatically stretched or compressed to match each subtitle's duration. Drag the subtitles to move them; double-click to reset.</p>
+    </div>
+
+    <div class="panel list-panel">
+      <h2 id="listTitle">Browse</h2>
+      <div id="chips" class="chips">
+        <button class="chip active" data-query="__trending">Trending</button>
+        <button class="chip" data-query="music">Music</button>
+        <button class="chip" data-query="relaxing">Relaxing</button>
+        <button class="chip" data-query="news">News</button>
+        <button class="chip" data-query="learning">Learning</button>
+        <button class="chip" data-query="gaming">Gaming</button>
+        <button class="chip" data-query="khmer">Khmer</button>
+      </div>
+      <div id="list" class="list">
+        <div class="empty">Loading trending videos…</div>
+      </div>
+    </div>
+  </aside>
+</main>
+
+<div id="promptModal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="promptTitle">
+  <div class="modal-card prompt-card">
+    <button class="modal-x" id="promptClose" aria-label="Close">×</button>
+    <div class="prompt-head">
+      <img id="promptThumb" alt="">
+      <div class="prompt-meta">
+        <h3 id="promptTitle"></h3>
+        <p id="promptAuthor"></p>
+      </div>
+    </div>
+    <label class="field"><span>Voice</span><select id="promptVoice"></select></label>
+    <p class="hint">Interpret the subtitles into Khmer and speak them, timed to the picture.</p>
+    <div class="modal-actions">
+      <button id="promptWatch" class="ghost">Watch only</button>
+      <button id="promptDub" class="primary">Interpret to Khmer</button>
+    </div>
+  </div>
+</div>
+
+<div id="downloadModal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="dlTitle">
+  <div class="modal-card">
+    <button class="modal-x" id="dlClose" aria-label="Close">×</button>
+    <h3 id="dlTitle">Download</h3>
+    <label class="radio"><input type="radio" name="dlMode" value="srt" checked> Subtitles only (.srt) — instant</label>
+    <label class="radio"><input type="radio" name="dlMode" value="audio"> Khmer voice + subtitles (.m4a + .srt)</label>
+    <label class="radio"><input type="radio" name="dlMode" value="video"> Video + Khmer voice + subtitles (.mkv)</label>
+    <label class="radio"><input type="radio" name="dlMode" value="video_sub"> Video + Khmer subtitles, original audio (.mkv)</label>
+    <label class="switch compact"><input type="checkbox" id="dlBilingual"><span class="track"></span><span class="switch-label">Include original text in SRT</span></label>
+    <div id="dlProgress" class="progress hidden">
+      <div class="progress-bar"><div id="dlBar"></div></div>
+      <span id="dlMsg"></span>
+    </div>
+    <div id="dlLinks" class="export-links"></div>
+    <div class="modal-actions">
+      <button id="dlStart" class="primary">Start download</button>
+      <button id="dlCloseBtn" class="ghost">Close</button>
+    </div>
+  </div>
+</div>
+
+<script src="/app.js"></script>
+<script src="https://www.youtube.com/iframe_api"></script>
+</body>
+</html>

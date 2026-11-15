@@ -1,0 +1,19 @@
+{
+  "manifest_version": 3,
+  "name": "Khmer Dub — YouTube subtitle interpreter",
+  "version": "1.0.0",
+  "description": "Adds a Khmer Dub button to YouTube: translates subtitles and speaks them with Edge TTS, synced to the video.",
+  "permissions": ["storage"],
+  "host_permissions": [
+    "http://127.0.0.1/*",
+    "http://localhost/*"
+  ],
+  "content_scripts": [
+    {
+      "matches": ["https://www.youtube.com/*"],
+      "js": ["content.js"],
+      "css": ["content.css"],
+      "run_at": "document_idle"
+    }
+  ]
+}

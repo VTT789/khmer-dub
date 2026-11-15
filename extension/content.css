@@ -1,0 +1,133 @@
+/* Khmer Dub panel + subtitle overlay on youtube.com */
+#khmer-dub-launch {
+  position: fixed;
+  right: 18px;
+  top: 76px;
+  z-index: 2147483646;
+  font-family: "Segoe UI", system-ui, sans-serif;
+}
+#khmer-dub-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 9px 14px;
+  border: 1px solid rgba(124, 108, 255, .55);
+  border-radius: 999px;
+  background: linear-gradient(135deg, #7c6cff, #5648d8);
+  color: #fff;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: 0 8px 22px rgba(0, 0, 0, .35);
+}
+#khmer-dub-btn:hover { filter: brightness(1.12); }
+#khmer-dub-btn.active { background: linear-gradient(135deg, #23d5ab, #16a085); border-color: rgba(35,213,171,.6); }
+
+#khmer-dub-panel {
+  position: fixed;
+  right: 18px;
+  top: 120px;
+  width: 300px;
+  max-height: 78vh;
+  overflow-y: auto;
+  z-index: 2147483646;
+  background: rgba(17, 19, 26, .96);
+  border: 1px solid rgba(255,255,255,.12);
+  border-radius: 14px;
+  padding: 14px;
+  color: #e8eaf2;
+  font-family: "Segoe UI", system-ui, sans-serif;
+  font-size: 12.5px;
+  box-shadow: 0 18px 50px rgba(0,0,0,.5);
+  backdrop-filter: blur(10px);
+}
+#khmer-dub-panel h3 {
+  margin: 0 0 8px;
+  font-size: 13px;
+  letter-spacing: .04em;
+  text-transform: uppercase;
+  color: #9aa1b5;
+  font-weight: 600;
+}
+#khmer-dub-status { min-height: 34px; line-height: 1.45; color: #c9cfe2; margin-bottom: 10px; }
+#khmer-dub-panel label { display: block; margin: 8px 0 4px; color: #9aa1b5; font-size: 11.5px; }
+#khmer-dub-panel select {
+  width: 100%;
+  padding: 7px 9px;
+  border-radius: 8px;
+  border: 1px solid rgba(255,255,255,.14);
+  background: #11131a;
+  color: #e8eaf2;
+  font-size: 12.5px;
+}
+#khmer-dub-panel .row { display: flex; gap: 8px; margin-top: 12px; }
+#khmer-dub-panel button.action {
+  flex: 1;
+  padding: 8px 10px;
+  border-radius: 9px;
+  border: 1px solid rgba(255,255,255,.14);
+  background: #1b1f2d;
+  color: #e8eaf2;
+  font-size: 12.5px;
+  font-weight: 600;
+  cursor: pointer;
+}
+#khmer-dub-panel button.action.primary {
+  background: linear-gradient(135deg, #7c6cff, #5648d8);
+  border-color: transparent;
+}
+#khmer-dub-panel button.action:disabled { opacity: .45; cursor: not-allowed; }
+#khmer-dub-panel .muted { color: #7d8599; font-size: 11px; margin-top: 8px; line-height: 1.4; }
+#khmer-dub-dl-status { margin-top: 8px; font-size: 11.5px; color: #9aa1b5; min-height: 14px; line-height: 1.4; }
+#khmer-dub-dl-links { display: flex; flex-direction: column; gap: 6px; margin-top: 8px; }
+#khmer-dub-dl-links a {
+  display: block;
+  padding: 7px 9px;
+  border-radius: 8px;
+  background: rgba(35, 213, 171, .1);
+  border: 1px solid rgba(35, 213, 171, .35);
+  color: #2fe0b4;
+  text-decoration: none;
+  font-size: 12px;
+}
+#khmer-dub-dl-links a:hover { filter: brightness(1.15); }
+
+#khmer-dub-subs {
+  position: fixed;
+  left: 50%;
+  bottom: 110px;
+  transform: translateX(-50%);
+  max-width: min(78vw, 980px);
+  z-index: 2147483645;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 5px;
+  pointer-events: auto;
+  cursor: grab;
+  user-select: none;
+  touch-action: none;
+  text-align: center;
+}
+#khmer-dub-subs.dragging { cursor: grabbing; }
+#khmer-dub-subs .kd-line {
+  padding: 8px 16px;
+  border-radius: 12px;
+  background: transparent;
+  backdrop-filter: blur(10px);
+  color: #fff;
+  font-family: "Noto Sans Khmer", "Khmer OS", "Leelawadee UI", sans-serif;
+  font-size: clamp(17px, 1.7vw, 25px);
+  line-height: 1.5;
+  text-shadow: 0 2px 12px rgba(0, 0, 0, .95), 0 0 4px rgba(0, 0, 0, .85);
+}
+#khmer-dub-subs .kd-orig {
+  padding: 4px 12px;
+  border-radius: 9px;
+  background: transparent;
+  backdrop-filter: blur(8px);
+  color: #eef1f8;
+  font-size: clamp(11px, 1vw, 14px);
+  line-height: 1.4;
+  text-shadow: 0 2px 10px rgba(0, 0, 0, .9);
+}
